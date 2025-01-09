@@ -13,6 +13,13 @@ interface NavConfig {
 }
 
 const navConfig: NavConfig = {
+  '/emails/dashboard': [
+    {
+      title: 'Dashboard - Factory',
+      href: '/emails/dashboard',
+      icon: <FileText className="w-4 h-4" />
+    }
+  ],
   '/emails/sacados': [
     {
       title: 'Sacados',

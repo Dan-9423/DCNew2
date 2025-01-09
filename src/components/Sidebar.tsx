@@ -157,7 +157,7 @@ export default function Sidebar() {
 
         {/* Menu Section */}
         <div className="flex-1 overflow-y-auto p-4">
-          <nav>
+          <nav className="space-y-1.5">
             {menuItems.map((item) => (
               <div key={item.title}>
                 {item.path ? (
@@ -166,7 +166,7 @@ export default function Sidebar() {
                       <Link
                         to={item.path}
                         className={cn(
-                          'w-full flex items-center gap-3 p-3 rounded-lg mb-1 transition-colors duration-100',
+                          'w-full flex items-center gap-3 p-2.5 rounded-lg transition-colors duration-100 text-[13px]',
                           location.pathname === item.path
                             ? 'bg-blue-600 text-white'
                             : 'hover:bg-gray-100 dark:hover:bg-[#242424] hover:text-blue-600 text-gray-700 dark:text-gray-300'
@@ -183,7 +183,7 @@ export default function Sidebar() {
                     <button
                       onClick={() => setExpandedMenu(expandedMenu === item.title ? null : item.title)}
                       className={cn(
-                        'w-full flex items-center justify-between p-3 rounded-lg mb-1 transition-colors duration-100',
+                        'w-full flex items-center justify-between p-2.5 rounded-lg transition-colors duration-100 text-[13px]',
                         expandedMenu === item.title
                           ? 'bg-blue-50 dark:bg-[#242424] text-blue-600 dark:text-white'
                           : 'hover:bg-gray-100 dark:hover:bg-[#242424] hover:text-blue-600 text-gray-700 dark:text-gray-300'
@@ -200,13 +200,13 @@ export default function Sidebar() {
                       )}
                     </button>
                     {item.submenu && expandedMenu === item.title && (
-                      <div className="ml-4 mb-2 overflow-hidden animate-slideDown">
+                      <div className="ml-4 mt-1 mb-1 overflow-hidden animate-slideDown">
                         {item.submenu.map((sub) => (
                           <Link
                             key={sub.path}
                             to={sub.path}
                             className={cn(
-                              'block w-full text-left p-2 pl-8 rounded-lg mb-1 transition-colors duration-100',
+                              'block w-full text-left p-2 pl-8 rounded-lg mb-0.5 transition-colors duration-100 text-[13px]',
                               location.pathname === sub.path
                                 ? 'bg-blue-600 text-white'
                                 : 'hover:bg-gray-100 dark:hover:bg-[#242424] hover:text-blue-600 text-gray-600 dark:text-gray-400'
@@ -223,7 +223,7 @@ export default function Sidebar() {
                     <PopoverTrigger asChild>
                       <button
                         className={cn(
-                          'w-full flex items-center justify-center p-3 rounded-lg mb-1 transition-colors duration-100',
+                          'w-full flex items-center justify-center p-2.5 rounded-lg transition-colors duration-100',
                           expandedMenu === item.title
                             ? 'bg-blue-50 dark:bg-[#242424] text-blue-600 dark:text-white'
                             : 'hover:bg-gray-100 dark:hover:bg-[#242424] hover:text-blue-600 text-gray-700 dark:text-gray-300'
@@ -233,7 +233,7 @@ export default function Sidebar() {
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="right" className="p-2 w-48">
-                      <div className="flex items-center gap-2 px-2 py-1.5 mb-2 text-sm font-medium border-b border-gray-100 dark:border-gray-800">
+                      <div className="flex items-center gap-2 px-2 py-1.5 mb-1 text-sm font-medium border-b border-gray-100 dark:border-gray-800">
                         {item.icon}
                         {item.title}
                       </div>
@@ -243,7 +243,7 @@ export default function Sidebar() {
                             key={sub.path}
                             to={sub.path}
                             className={cn(
-                              'block w-full text-left px-2 py-1.5 rounded text-sm transition-colors duration-100',
+                              'block w-full text-left px-2 py-1.5 rounded text-[13px] transition-colors duration-100',
                               location.pathname === sub.path
                                 ? 'bg-blue-600 text-white'
                                 : 'hover:bg-gray-100 dark:hover:bg-[#242424] hover:text-blue-600 text-gray-600 dark:text-gray-400'
@@ -268,7 +268,7 @@ export default function Sidebar() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/10",
+                  "w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/10 text-[13px]",
                   !isExpanded && "px-0"
                 )}
                 onClick={logout}
