@@ -62,20 +62,28 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
     // Remove tudo exceto números
     let numbers = value.replace(/\D/g, '');
     
+    // Se não houver números, retorna R$ 0,00
+    if (!numbers) {
+      return 'R$ 0,00';
+    }
+    
     // Converte para número e divide por 100 para considerar centavos
     const amount = parseFloat(numbers) / 100;
     
     // Formata o número
-    return new Intl.NumberFormat('pt-BR', {
+    return `R$ ${new Intl.NumberFormat('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amount)}`;
   };
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     
-    // Se estiver começando a digitar, limpa o campo
+    // Remove o prefixo R$ se existir
+    value = value.replace('R$ ', '');
+    
+    // Se estiver começando a digitar, permite começar do zero
     if (value === '0,00') {
       value = '';
     }
@@ -84,7 +92,7 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
     e.target.value = formatted;
     
     // Converte o valor formatado para número
-    const numericValue = parseFloat(formatted.replace(/\./g, '').replace(',', '.'));
+    const numericValue = parseFloat(formatted.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
     form.setValue('valorTotal', numericValue);
   };
 
@@ -226,11 +234,12 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
                     {...field}
                     onChange={handleCurrencyInput}
                     onFocus={(e) => {
-                      if (e.target.value === '0,00') {
-                        e.target.value = '';
+                      if (e.target.value === 'R$ 0,00') {
+                        e.target.value = 'R$ ';
                       }
                     }}
-                    defaultValue="0,00"
+                    value={field.value === 0 ? 'R$ 0,00' : formatCurrency(field.value.toString())}
+                    placeholder="R$ 0,00"
                   />
                 </FormControl>
                 <FormMessage />

@@ -83,8 +83,13 @@ export default function EnviarEmail() {
       <div className="bg-white dark:bg-[#1C1C1C] rounded-lg p-6 shadow-lg">
         <h2 className="text-xl font-semibold mb-6">Inserção de Dados</h2>
         
-        {/* Anexos - Movido para cima */}
-        <div className="mb-6">
+        <EmailForm 
+          onSubmit={handleEmailSubmit}
+          customers={customers}
+        />
+
+        {/* Anexos - Movido para depois do formulário */}
+        <div className="mt-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium">Anexos</h3>
             <Button variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
@@ -125,11 +130,6 @@ export default function EnviarEmail() {
             </div>
           )}
         </div>
-
-        <EmailForm 
-          onSubmit={handleEmailSubmit}
-          customers={customers}
-        />
       </div>
 
       {/* Coluna da Direita - Preview */}
