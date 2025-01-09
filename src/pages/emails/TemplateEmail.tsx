@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, FileText, Eye, Pencil, Trash2, Info } from 'lucide-react';
+import { Plus, FileText, Eye, Pencil, Trash2, Info, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEmailTemplate } from '@/contexts/EmailTemplateContext';
 import { useToast } from '@/hooks/use-toast';
@@ -50,9 +50,10 @@ const variablesList = [
 
 export default function TemplateEmail() {
   const { toast } = useToast();
-  const { templates, addTemplate, deleteTemplate } = useEmailTemplate();
+  const { templates, addTemplate, deleteTemplate, setActiveTemplate } = useEmailTemplate();
   const [showEditor, setShowEditor] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplateSelection, setShowTemplateSelection] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<{
     id?: string;
@@ -87,6 +88,15 @@ export default function TemplateEmail() {
     });
   };
 
+  const handleSetActive = (id: string) => {
+    setActiveTemplate(id);
+    setShowTemplateSelection(false);
+    toast({
+      title: "Template ativo definido",
+      description: "O template foi definido como ativo com sucesso.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -112,7 +122,7 @@ export default function TemplateEmail() {
               </li>
             ))}
           </ul>
-          <div className="mt-6">
+          <div className="mt-6 flex gap-2">
             <Button onClick={() => {
               setSelectedTemplate({
                 version: `Template ${templates.length + 1}`,
@@ -123,6 +133,10 @@ export default function TemplateEmail() {
             }}>
               <Plus className="mr-2 h-4 w-4" />
               Novo Template
+            </Button>
+            <Button variant="outline" onClick={() => setShowTemplateSelection(true)}>
+              <Check className="mr-2 h-4 w-4" />
+              Definir Template em Uso
             </Button>
           </div>
         </CardContent>
@@ -142,6 +156,11 @@ export default function TemplateEmail() {
                         <Badge variant="secondary">
                           {new Date(template.createdAt).toLocaleString()}
                         </Badge>
+                        {template.isActive && (
+                          <Badge variant="success" className="bg-green-500">
+                            Em Uso
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">
                         {template.subject}
@@ -194,6 +213,35 @@ export default function TemplateEmail() {
         )}
       </div>
 
+      {/* Template Selection Dialog */}
+      <Dialog open={showTemplateSelection} onOpenChange={setShowTemplateSelection}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Selecionar Template Ativo</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {templates.map((template) => (
+              <div
+                key={template.id}
+                className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent cursor-pointer"
+                onClick={() => handleSetActive(template.id)}
+              >
+                <div>
+                  <h3 className="font-medium">{template.version}</h3>
+                  <p className="text-sm text-muted-foreground">{template.subject}</p>
+                </div>
+                {template.isActive && (
+                  <Badge variant="success" className="bg-green-500">
+                    Em Uso
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Other dialogs remain the same */}
       <Dialog open={showEditor} onOpenChange={setShowEditor}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>

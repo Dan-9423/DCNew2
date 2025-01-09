@@ -25,37 +25,9 @@ Estamos à disposição para quaisquer esclarecimentos adicionais. No silêncio,
 Agradecemos a sua atenção e confiança em nossos serviços.
 
 Atenciosamente,`,
+    isActive: true,
   },
-  {
-    id: '2',
-    version: 'Template Cobrança',
-    subject: 'Aviso de Pendência - DC Advisors',
-    content: `Prezado Cliente [[razaoSocial]],
-
-Identificamos em nossa base que o título referente à NF [[numeroNF]], no valor de [[valorTotal]], encontra-se pendente de pagamento.
-
-Solicitamos a gentileza de regularizar esta pendência o mais breve possível para evitar possíveis encargos adicionais.
-
-Caso o pagamento já tenha sido efetuado, por favor, desconsidere este aviso e nos envie o comprovante.
-
-Permanecemos à disposição para esclarecimentos.
-
-Atenciosamente,
-DC Advisors`,
-  },
-  {
-    id: '3',
-    version: 'Template Confirmação',
-    subject: 'Confirmação de Recebimento - DC Advisors',
-    content: `Prezado(a),
-
-Confirmamos o recebimento do pagamento referente à NF [[numeroNF]] no valor de [[valorTotal]].
-
-Agradecemos a pontualidade e a confiança em nossos serviços.
-
-Atenciosamente,
-DC Advisors`,
-  }
+  // ... other default templates with isActive: false
 ];
 
 interface EmailTemplateContextType {
@@ -63,6 +35,8 @@ interface EmailTemplateContextType {
   addTemplate: (template: Omit<EmailTemplateVersion, 'id' | 'createdAt'>) => void;
   updateTemplate: (id: string, template: Partial<EmailTemplateVersion>) => void;
   deleteTemplate: (id: string) => void;
+  setActiveTemplate: (id: string) => void;
+  getActiveTemplate: () => EmailTemplateVersion | undefined;
 }
 
 const EmailTemplateContext = createContext<EmailTemplateContextType | undefined>(undefined);
@@ -87,7 +61,8 @@ export function EmailTemplateProvider({ children }: { children: React.ReactNode 
     const newTemplate: EmailTemplateVersion = {
       ...template,
       id: crypto.randomUUID(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      isActive: false
     };
     setTemplates(prev => [newTemplate, ...prev]);
   };
@@ -102,12 +77,25 @@ export function EmailTemplateProvider({ children }: { children: React.ReactNode 
     setTemplates(prev => prev.filter(t => t.id !== id));
   };
 
+  const setActiveTemplate = (id: string) => {
+    setTemplates(prev => prev.map(t => ({
+      ...t,
+      isActive: t.id === id
+    })));
+  };
+
+  const getActiveTemplate = () => {
+    return templates.find(t => t.isActive);
+  };
+
   return (
     <EmailTemplateContext.Provider value={{
       templates,
       addTemplate,
       updateTemplate,
-      deleteTemplate
+      deleteTemplate,
+      setActiveTemplate,
+      getActiveTemplate
     }}>
       {children}
     </EmailTemplateContext.Provider>

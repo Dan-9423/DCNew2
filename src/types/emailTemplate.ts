@@ -4,6 +4,7 @@ export interface EmailTemplateVersion {
   subject: string;
   content: string;
   createdAt: string;
+  isActive?: boolean;
 }
 
 export interface EmailTemplateState {

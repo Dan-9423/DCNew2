@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Search, Upload } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,7 +23,7 @@ const formSchema = z.object({
   email: z.string().email('E-mail inválido'),
   telefone: z.string().optional(),
   numeroNF: z.string().min(1, 'Número da NF é obrigatório'),
-  valorTotal: z.number().min(0.01, 'Valor deve ser maior que zero'),
+  valorTotal: z.number().min(0, 'Valor não pode ser negativo'),
 });
 
 interface EmailFormProps {
@@ -62,11 +62,6 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
     // Remove tudo exceto números
     let numbers = value.replace(/\D/g, '');
     
-    // Se não houver números, retorna R$ 0,00
-    if (!numbers) {
-      return 'R$ 0,00';
-    }
-    
     // Converte para número e divide por 100 para considerar centavos
     const amount = parseFloat(numbers) / 100;
     
@@ -80,15 +75,31 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     
-    // Remove o prefixo R$ e espaços se existirem
+    // Remove o prefixo R$ e espaços
     value = value.replace(/^R\$\s?/, '');
     
-    const formatted = formatCurrency(value);
+    // Se o valor estiver vazio, define como R$ 0,00
+    if (!value) {
+      e.target.value = 'R$ 0,00';
+      form.setValue('valorTotal', 0);
+      return;
+    }
+    
+    // Remove caracteres não numéricos
+    const numericValue = value.replace(/\D/g, '');
+    
+    // Converte para número (em centavos)
+    const cents = parseInt(numericValue, 10);
+    
+    // Converte centavos para reais
+    const reais = cents / 100;
+    
+    // Formata o valor
+    const formatted = formatCurrency(numericValue);
     e.target.value = formatted;
     
-    // Converte o valor formatado para número
-    const numericValue = parseFloat(formatted.replace(/\D/g, '')) / 100;
-    form.setValue('valorTotal', numericValue);
+    // Atualiza o valor no formulário
+    form.setValue('valorTotal', reais);
   };
 
   const filteredCustomers = customers.filter(customer =>
@@ -221,7 +232,7 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
           <FormField
             control={form.control}
             name="valorTotal"
-            render={({ field: { onChange, ...field } }) => (
+            render={({ field: { onChange, value, ...field } }) => (
               <FormItem className="col-span-2">
                 <FormLabel>Valor Total</FormLabel>
                 <FormControl>
@@ -233,7 +244,7 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
                         e.target.value = 'R$ ';
                       }
                     }}
-                    value={field.value === 0 ? 'R$ 0,00' : formatCurrency(field.value.toString())}
+                    defaultValue="R$ 0,00"
                     placeholder="R$ 0,00"
                   />
                 </FormControl>
