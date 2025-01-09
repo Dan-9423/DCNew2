@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Search } from 'lucide-react';
+import { Search, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -71,28 +71,23 @@ export default function EmailForm({ onSubmit, customers }: EmailFormProps) {
     const amount = parseFloat(numbers) / 100;
     
     // Formata o número
-    return `R$ ${new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)}`;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(amount);
   };
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     
-    // Remove o prefixo R$ se existir
-    value = value.replace('R$ ', '');
-    
-    // Se estiver começando a digitar, permite começar do zero
-    if (value === '0,00') {
-      value = '';
-    }
+    // Remove o prefixo R$ e espaços se existirem
+    value = value.replace(/^R\$\s?/, '');
     
     const formatted = formatCurrency(value);
     e.target.value = formatted;
     
     // Converte o valor formatado para número
-    const numericValue = parseFloat(formatted.replace('R$ ', '').replace(/\./g, '').replace(',', '.'));
+    const numericValue = parseFloat(formatted.replace(/\D/g, '')) / 100;
     form.setValue('valorTotal', numericValue);
   };
 

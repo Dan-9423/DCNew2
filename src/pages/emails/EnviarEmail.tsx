@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Paperclip } from 'lucide-react';
+import { Paperclip, Upload } from 'lucide-react';
 import { useCustomers } from '@/contexts/CustomerContext';
 import { useEmailTemplate } from '@/contexts/EmailTemplateContext';
 import { EmailData } from '@/types/email';
@@ -89,13 +89,25 @@ export default function EnviarEmail() {
         />
 
         {/* Anexos - Movido para depois do formulário */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Anexos</h3>
-            <Button variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
-              <Paperclip className="h-4 w-4 mr-2" />
-              Adicionar Anexo
-            </Button>
+        <div className="mt-6 p-6 border-2 border-dashed rounded-lg border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+              <Upload className="h-6 w-6 text-blue-500" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-medium mb-1">Anexar Arquivos</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Arraste arquivos PDF aqui ou clique para selecionar
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => document.getElementById('file-upload')?.click()}
+                className="w-full max-w-xs"
+              >
+                <Paperclip className="h-4 w-4 mr-2" />
+                Selecionar Arquivos
+              </Button>
+            </div>
             <input
               id="file-upload"
               type="file"
@@ -107,14 +119,15 @@ export default function EnviarEmail() {
           </div>
 
           {attachments.length > 0 && (
-            <div className="space-y-2">
+            <div className="mt-6 space-y-2">
+              <h4 className="font-medium mb-2">Arquivos Anexados:</h4>
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
                 >
                   <div className="flex items-center">
-                    <Paperclip className="h-4 w-4 mr-2 text-gray-500" />
+                    <Paperclip className="h-4 w-4 mr-2 text-blue-500" />
                     <span className="text-sm">{file.name}</span>
                   </div>
                   <Button
