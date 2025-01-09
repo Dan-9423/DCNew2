@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Minus, LayoutDashboard, Users, Settings, BarChart2, FileText, LogOut, Home, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
+import { Plus, Minus, LayoutDashboard, Users, Settings, BarChart2, FileText, LogOut, Home, ChevronLeft, ChevronRight, Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
@@ -78,9 +78,10 @@ export default function Sidebar() {
       ],
     },
     {
-      title: 'E-mails Factory',
-      icon: <Mail className="w-5 h-5" />,
+      title: 'Factory',
+      icon: <Factory className="w-5 h-5" />,
       submenu: [
+        { title: 'Dashboard', path: '/emails/dashboard' },
         { title: 'Sacados', path: '/emails/sacados' },
         { title: 'Envio de E-mails', path: '/emails/enviar' },
         { title: 'Template de E-mail', path: '/emails/template' },

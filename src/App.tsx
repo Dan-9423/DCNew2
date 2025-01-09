@@ -16,6 +16,7 @@ import Auth from './pages/Auth';
 import ContasSemanais from './pages/relatorios/ContasSemanais';
 import ContasMensais from './pages/relatorios/ContasMensais';
 import Fechamento from './pages/relatorios/Fechamento';
+import FactoryDashboard from './pages/emails/FactoryDashboard';
 import Sacados from './pages/emails/Sacados';
 import EnviarEmail from './pages/emails/EnviarEmail';
 import TemplateEmail from './pages/emails/TemplateEmail';
@@ -59,7 +60,8 @@ function AppContent() {
               <Route path="/relatorios/contas-mensais" element={<ContasMensais />} />
               <Route path="/relatorios/fechamento" element={<Fechamento />} />
               
-              {/* Email Routes */}
+              {/* Factory Routes */}
+              <Route path="/emails/dashboard" element={<FactoryDashboard />} />
               <Route path="/emails/sacados" element={<Sacados />} />
               <Route path="/emails/enviar" element={<EnviarEmail />} />
               <Route path="/emails/template" element={<TemplateEmail />} />
