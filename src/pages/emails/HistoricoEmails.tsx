@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mail } from 'lucide-react';
 import EmailHistoryList from '@/components/emails/EmailHistoryList';
 import { EmailData, EmailHistory } from '@/types/email';
@@ -32,30 +32,15 @@ export default function HistoricoEmails() {
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
-  const [history, setHistory] = useState<EmailHistory[]>([
-    {
-      id: '1',
-      emailData: {
-        razaoSocial: 'Empresa ABC Ltda',
-        email: 'financeiro@abc.com',
-        numeroNF: 'NF-123456',
-        valorTotal: 1500.50,
-      },
-      status: 'saved',
-      sentAt: '2024-03-20T10:30:00Z'
-    },
-    {
-      id: '2',
-      emailData: {
-        razaoSocial: 'XYZ Comércio',
-        email: 'contato@xyz.com',
-        numeroNF: 'NF-789012',
-        valorTotal: 2750.75,
-      },
-      status: 'sent',
-      sentAt: '2024-03-20T11:15:00Z'
+  const [history, setHistory] = useState<EmailHistory[]>([]);
+
+  // Load history from localStorage
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('emailHistory');
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
     }
-  ]);
+  }, []);
 
   const handleSelectEmail = (id: string) => {
     setSelectedEmails(prev => {
@@ -79,8 +64,16 @@ export default function HistoricoEmails() {
 
     setIsSending(true);
     try {
-      // Here you would implement the actual sending logic
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating API call
+      // Update status of selected emails to 'sent'
+      const updatedHistory = history.map(email => 
+        selectedEmails.includes(email.id) 
+          ? { ...email, status: 'sent' as const } 
+          : email
+      );
+      
+      // Save to localStorage
+      localStorage.setItem('emailHistory', JSON.stringify(updatedHistory));
+      setHistory(updatedHistory);
       
       toast({
         title: "E-mails enviados",
@@ -113,8 +106,11 @@ export default function HistoricoEmails() {
   const confirmDelete = () => {
     if (!deleteConfirmation) return;
 
-    setHistory(prev => prev.filter(email => email.id !== deleteConfirmation));
+    const updatedHistory = history.filter(email => email.id !== deleteConfirmation);
+    setHistory(updatedHistory);
+    localStorage.setItem('emailHistory', JSON.stringify(updatedHistory));
     setDeleteConfirmation(null);
+    
     toast({
       title: "E-mail excluído",
       description: "O e-mail foi excluído com sucesso.",

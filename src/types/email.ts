@@ -17,6 +17,11 @@ export interface EmailHistory {
   sentAt: string;
   status: EmailStatus;
   logs?: EmailLog[];
+  attachments?: {
+    name: string;
+    size: number;
+    type: string;
+  }[];
 }
 
 export interface EmailLog {
@@ -24,13 +29,4 @@ export interface EmailLog {
   timestamp: Date;
   action: string;
   details: string;
-}
-
-export interface EmailTemplate {
-  id: string;
-  name: string;
-  subject: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
 }

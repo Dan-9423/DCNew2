@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { Paperclip, Upload } from 'lucide-react';
 import { useCustomers } from '@/contexts/CustomerContext';
 import { useEmailTemplate } from '@/contexts/EmailTemplateContext';
-import { EmailData } from '@/types/email';
+import { EmailData, EmailHistory } from '@/types/email';
 import EmailForm from '@/components/forms/EmailForm';
 import EmailPreview from '@/components/emails/EmailPreview';
 import { getEmailTemplate } from '@/lib/email';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 export default function EnviarEmail() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { customers } = useCustomers();
   const { templates, getActiveTemplate } = useEmailTemplate();
@@ -34,17 +36,49 @@ export default function EnviarEmail() {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const createHistoryEntry = (status: 'draft' | 'saved' | 'sent'): EmailHistory => {
+    if (!emailData) throw new Error('No email data');
+
+    return {
+      id: crypto.randomUUID(),
+      emailData,
+      sentAt: new Date().toISOString(),
+      status,
+      attachments: attachments.map(file => ({
+        name: file.name,
+        size: file.size,
+        type: file.type
+      }))
+    };
+  };
+
   const handleSave = async () => {
     if (!emailData) return;
 
     try {
-      // Here you would implement the actual save logic
+      // Create history entry
+      const historyEntry = createHistoryEntry('saved');
+      
+      // Get existing history from localStorage
+      const existingHistory = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      
+      // Add new entry
+      const updatedHistory = [historyEntry, ...existingHistory];
+      
+      // Save to localStorage
+      localStorage.setItem('emailHistory', JSON.stringify(updatedHistory));
+
       toast({
         title: "E-mail salvo",
         description: "O e-mail foi salvo com sucesso no histórico.",
       });
+      
+      // Clear form
       setEmailData(null);
       setAttachments([]);
+      
+      // Navigate to history
+      navigate('/emails/historico');
     } catch (error) {
       toast({
         title: "Erro ao salvar",
@@ -59,15 +93,29 @@ export default function EnviarEmail() {
 
     setIsSending(true);
     try {
-      // Here you would implement the actual save and send logic
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulating API call
+      // Create history entry
+      const historyEntry = createHistoryEntry('sent');
+      
+      // Get existing history
+      const existingHistory = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      
+      // Add new entry
+      const updatedHistory = [historyEntry, ...existingHistory];
+      
+      // Save to localStorage
+      localStorage.setItem('emailHistory', JSON.stringify(updatedHistory));
       
       toast({
         title: "E-mail enviado",
         description: "O e-mail foi salvo e enviado com sucesso.",
       });
+      
+      // Clear form
       setEmailData(null);
       setAttachments([]);
+      
+      // Navigate to history
+      navigate('/emails/historico');
     } catch (error) {
       toast({
         title: "Erro ao enviar",
@@ -87,7 +135,7 @@ export default function EnviarEmail() {
           <p className="text-muted-foreground mb-6">
             Para enviar e-mails, primeiro defina um template ativo na página de templates.
           </p>
-          <Button onClick={() => window.location.href = '/emails/template'}>
+          <Button onClick={() => navigate('/emails/template')}>
             Ir para Templates
           </Button>
         </div>
@@ -97,7 +145,6 @@ export default function EnviarEmail() {
 
   return (
     <div className="grid grid-cols-2 gap-6">
-      {/* Rest of the component remains the same */}
       <div className="bg-white dark:bg-[#1C1C1C] rounded-lg p-6 shadow-lg">
         <h2 className="text-xl font-semibold mb-6">Inserção de Dados</h2>
         
